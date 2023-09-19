@@ -10,13 +10,13 @@ def read_data(file_name):
     email_list = zip(names, emails)
     return email_list
 
-def send_email(email_body, email_list):
+def send_email(email_subject, email_body, email_list):
     outlook = app('Microsoft Outlook')
     for name, email in email_list:
         msg = outlook.make(
             new=k.outgoing_message,
             with_properties={
-                k.subject: 'Test Email',
+                k.subject: email_subject,
                 k.plain_text_content: f'Dear {name},' + f'\n\n{email_body}'
             }
         )
@@ -32,10 +32,9 @@ def send_email(email_body, email_list):
         )
         msg.send()
 
-def run_program(file, body):
+def run_program(file, curr_body, curr_subject):
     curr_list = read_data(file)
-    curr_body = '\n\n' + body
-    send_email(curr_body, curr_list)
+    send_email(curr_subject, curr_body, curr_list)
 
 # curr_list = read_data('funbook.xlsx')
 # curr_body = f'I have pain in my stomach'
@@ -45,7 +44,7 @@ def file_clicked():
     global file_select
     file_select = filedialog.askopenfilename()
     selected_label.config(text="Selected File: " + file_select)
-    doit_button.config(text="Send Emails", command=lambda: run_program(file_select, mail_body_text.get("1.0", "end-1c")))
+    doit_button.config(text="Send Emails", command=lambda: run_program(file_select, mail_body_text.get("1.0", "end-1c"), mail_subject_text.get("1.0", "end-1c")))
 
 main = Tk()
 
@@ -63,6 +62,12 @@ file_select = None
 
 selected_label = Label(text="No file selected")
 selected_label.pack()
+
+mail_subject_label = Label(text="Email Subject")
+mail_subject_text = Text(height=1, width=100)
+
+mail_subject_label.pack()
+mail_subject_text.pack()
 
 mail_body_label = Label(text="Email Body")
 mail_body_text = Text(height=20, width=300)
